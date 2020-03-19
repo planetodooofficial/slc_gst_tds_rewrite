@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!--    Added Make Advance Payment button and One2many field which have
+        payments records against this PO on purchase order-->
+    <record id="purchase_order_form_inherit_supplier_adv_pay" model="ir.ui.view">
+        <field name="name">purchase.order.supplier.adv.pay.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header/button[@name='action_view_invoice']" position="before">
+                <button name="action_view_payment" string="Make Advance Payment" attrs = "{'invisible': [('state','!=','purchase')]}" type="object" class="btn-primary"/>
+            </xpath>
+            <xpath expr="//div[@class='oe_button_box']//button[@name='action_view_invoice']" position="before">
+                <button type="object" name="action_view_payment"
+                    class="oe_stat_button"
+                    icon="fa-pencil-square-o" attrs="{'invisible':['|', ('payment_count', '=', 0), ('state', 'in', ('draft','sent','to approve'))]}">
+                    <field name="payment_count" widget="statinfo" string="Payments"/>
+                    <field name="payment_ids" invisible="1"/>
+                </button>
+            </xpath>
+<!--            <xpath expr="//page[@name='purchase_delivery_invoice']" position="after">-->
+<!--                <page name="adv_payment" string="Payments">-->
+<!--                    <group string="Payments">-->
+<!--                        <field name="payment_ids" nolabel="1" readonly="1"/>-->
+<!--                    </group>-->
+<!--                </page>-->
+<!--            </xpath>-->
+        </field>
+    </record>
+
+</odoo>
