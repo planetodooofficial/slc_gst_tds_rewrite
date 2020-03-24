@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tax_form_inherit" model="ir.ui.view">
+            <field name="name">account.tax.form.inherit</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_form"/>
+            <field name="arch" type="xml">
+                <field name="amount_type" position="after">
+                    <field name="apply_tds"/>
+                </field>
+                <field name="active" position="before">
+                    <field name="apply_tds_to"
+                           attrs="{'invisible':[('apply_tds','=', False)],
+                           'required':[('apply_tds','=', True)]}"/>
+                </field>
+                <field name="active" position="after">
+                   <field name="excess_of"
+                          attrs="{'invisible':[('apply_tds','=', False)]}"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- account tax tree inherit -->
+        <record id="tax_tree_inherit" model="ir.ui.view">
+            <field name="name">account.tax.tree.inherit</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_tree"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="apply_tds" invisible="1"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="tax_search_inherit" model="ir.ui.view">
+            <field name="name">account.tax.search.inherit</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_account_tax_search"/>
+            <field name="arch" type="xml">
+                <filter name="sale" position="before">
+                    <filter string="Apply TDS" name="apply_tds"
+                            domain="[('apply_tds','=',True)]"/>
+                </filter>
+            </field>
+        </record>
+
+        <record id="action_tds_apply" model="ir.actions.act_window">
+            <field name="name">TDS or Withholding tax</field>
+            <field name="res_model">account.tax</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'tds_default': True}</field>
+            <field name="view_id" ref="tax_tree_inherit"/>
+        </record>
+
+        <menuitem action="action_tds_apply" id="menu_action_tds_apply"
+                  parent="account.account_account_menu"
+                  sequence="2"/>
+
+    </data>
+</odoo>

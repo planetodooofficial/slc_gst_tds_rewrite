@@ -1,0 +1,17 @@
+<odoo>
+	<record id="view_partner_tds_inherit" model="ir.ui.view">
+	    <field name="name">res.partner.tds.inherit</field>
+	    <field name="model">res.partner</field>
+	    <field name="inherit_id" ref="base.view_partner_form"/>
+	    <field name="arch" type="xml">
+	    	<xpath expr="//notebook/page[@name='internal_notes']" position="before">
+	    		<page name="tds_threshold" string="TDS Threshold">
+	    			<div>
+	    				<label for="check_threshold" string="Apply TDS/Withholding if threshold is crossed"/>
+	    				<field name="check_threshold"/>
+	    			</div>
+	    		</page>
+	    	</xpath>
+	    </field>
+	</record>
+</odoo>
