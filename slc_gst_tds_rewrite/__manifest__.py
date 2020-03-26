@@ -18,6 +18,7 @@
                                 'views/tds_account_view.xml',
                                 'views/account_payment_tds_view.xml',
                                 'views/tds_res_partner_view.xml',
+                                'views/account_move_view.xml',
                             ],
   "application"          :  True,
   "installable"          :  True,
