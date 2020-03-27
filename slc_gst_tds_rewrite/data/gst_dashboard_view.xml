@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record model="gst.dashboard" id="gst_import">
+            <field name="name">Import Invoice</field>
+            <field name="invoice_type">import</field>
+        </record>
+       <record model="gst.dashboard" id="gst_export">
+            <field name="name">Export Invoice</field>
+            <field name="invoice_type">export</field>
+        </record>
+       <record model="gst.dashboard" id="gst_b2b">
+            <field name="name">B2B Invoice</field>
+            <field name="invoice_type">b2b</field>
+        </record>
+       <record model="gst.dashboard" id="gst_b2bur">
+            <field name="name">B2BUR Invoice</field>
+            <field name="invoice_type">b2bur</field>
+        </record>
+       <record model="gst.dashboard" id="gst_b2cs">
+            <field name="name">B2CS Invoice</field>
+            <field name="invoice_type">b2cs</field>
+        </record>
+       <record model="gst.dashboard" id="gst_b2cl">
+            <field name="name">B2CL Invoice</field>
+            <field name="invoice_type">b2cl</field>
+        </record>
+    </data>
+</odoo>

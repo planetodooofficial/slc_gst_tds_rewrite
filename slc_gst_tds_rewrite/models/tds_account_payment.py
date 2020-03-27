@@ -121,12 +121,12 @@ class PaymentAccountTDS(models.Model):
 
             if payment_difference_handling == 'reconcile' and payment_difference:
                 writeoff_line = self._get_shared_move_line_vals(0, 0, 0, account_move.id, False)
-                account_debit, account_credit, account_currency, currency_id = \
+                account_debit, account_credit, line_currency, currency_id = \
                     account_move_obj.with_context(
                         date=self.payment_date)._compute_amount_fields(payment_difference, self.currency_id,
                                                                        self.company_id.currency_id)
                 writeoff_line['name'] = _('Counterpart')
-                writeoff_line['amount_currency'] = account_currency
+                writeoff_line['amount_currency'] = line_currency
                 writeoff_line['account_id'] = writeoff_account_id.id
                 writeoff_line['currency_id'] = currency_id
                 writeoff_line['debit'] = account_debit
@@ -139,12 +139,12 @@ class PaymentAccountTDS(models.Model):
                 if invoice_dict_account['credit']:
                     account_diff = account_debit - account_credit
                     invoice_dict_account['credit'] += account_diff
-                invoice_dict_account['amount_currency'] -= account_currency
+                invoice_dict_account['amount_currency'] -= line_currency
             self.invoice_ids.register_payment(invoice_dict_account)
 
             if not self.currency_id != self.company_id.currency_id:
-                tds_currency = 0
-            cl_account_dict = self._get_shared_move_line_vals(credit, debit, -tds_currency, account_move.id, False)
+                account_currency = 0
+            cl_account_dict = self._get_shared_move_line_vals(credit, debit, -account_currency, account_move.id, False)
             cl_account_dict.update(self._get_liquidity_move_line_vals(-amount))
             account_move_obj.create(cl_account_dict)
 

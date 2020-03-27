@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <record model="unit.quantity.code" id="unit_amp">
+          <field name="name">AMPULES</field>
+          <field name="code">AMP</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_bag">
+          <field name="name">BAGS</field>
+          <field name="code">BAG</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_bal">
+          <field name="name">BALE</field>
+          <field name="code">BAL</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_bdl">
+          <field name="name">BUNDLES</field>
+          <field name="code">BDL</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_bkl">
+          <field name="name">BUCKLES</field>
+          <field name="code">BKL</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_bou">
+          <field name="name">BILLIONS OF UNITS</field>
+          <field name="code">BOU</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_box">
+          <field name="name">BOX</field>
+          <field name="code">BOX</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_btl">
+          <field name="name">BOTTLES</field>
+          <field name="code">btl</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_bun">
+          <field name="name">BUNCHES</field>
+          <field name="code">BUN</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_can">
+          <field name="name">CANS</field>
+          <field name="code">CAN</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_cbm">
+          <field name="name">CUBIC METER</field>
+          <field name="code">CBM</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_ccm">
+          <field name="name">CUBIC CENTIMETER</field>
+          <field name="code">CCM</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_cms">
+          <field name="name">CENTIMETER</field>
+          <field name="code">CMS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_ctn">
+          <field name="name">CARTONS</field>
+          <field name="code">CTN</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_crt">
+          <field name="name">CARAT</field>
+          <field name="code">CRT</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_doz">
+          <field name="name">DOZEN</field>
+          <field name="code">DOZ</field>
+        </record>
+        <record model="unit.quantity.code" id="data_state_uom_drm">
+          <field name="name">DRUM</field>
+          <field name="code">DRM</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_ggk">
+          <field name="name">GREAT GROSS</field>
+          <field name="code">GGK</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_gms">
+          <field name="name">GRAMS</field>
+          <field name="code">GMS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_grs">
+          <field name="name">GROSS</field>
+          <field name="code">GRS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_gyd">
+          <field name="name">GROSS YARDS</field>
+          <field name="code">GYD</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_kgs">
+          <field name="name">KILOGRAMS</field>
+          <field name="code">KGS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_klr">
+          <field name="name">KILOLITRE</field>
+          <field name="code">KLR</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_kme">
+          <field name="name">KILOMETERS</field>
+          <field name="code">KME</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_kit">
+          <field name="name">KITS</field>
+          <field name="code">KIT</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_mlt">
+          <field name="name">MILLILITRE</field>
+          <field name="code">MLT</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_mtr">
+          <field name="name">METER</field>
+          <field name="code">MTR</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_mou">
+          <field name="name">MILLIONS OF UNIT</field>
+          <field name="code">MOU</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_mts">
+          <field name="name">METRIC TON</field>
+          <field name="code">MTS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_nos">
+          <field name="name">NUMBERS</field>
+          <field name="code">NOS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_pac">
+          <field name="name">PACKS</field>
+          <field name="code">PAC</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_pcs">
+          <field name="name">PIECES</field>
+          <field name="code">PCS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_prs">
+          <field name="name">PAIRS</field>
+          <field name="code">PRS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_lbs">
+          <field name="name">POUNDS</field>
+          <field name="code">LBS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_qtl">
+          <field name="name">QUINTAL</field>
+          <field name="code">QTL</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_rol">
+          <field name="name">ROLLS</field>
+          <field name="code">ROL</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_set">
+          <field name="name">SETS</field>
+          <field name="code">SET</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_sqf">
+          <field name="name">SQUARE FEET</field>
+          <field name="code">SQF</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_sqm">
+          <field name="name">SQUARE METERS</field>
+          <field name="code">SQM</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_sqy">
+          <field name="name">SQUARE YARDS</field>
+          <field name="code">SQY</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_tbs">
+          <field name="name">TABLETS</field>
+          <field name="code">TBS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_tgm">
+          <field name="name">TEN GROSS</field>
+          <field name="code">TGM</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_thd">
+          <field name="name">THOUSANDS</field>
+          <field name="code">THD</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_ton">
+          <field name="name">TONNES</field>
+          <field name="code">TON</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_tub">
+          <field name="name">TUBES</field>
+          <field name="code">TUB</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_ugs">
+          <field name="name">US GALLONS</field>
+          <field name="code">UGS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_unt">
+          <field name="name">UNITS</field>
+          <field name="code">UNT</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_vls">
+          <field name="name">VIALS</field>
+          <field name="code">VLS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_yds">
+          <field name="name">YARDS</field>
+          <field name="code">YDS</field>
+        </record>
+        <record model="unit.quantity.code" id="unit_oth">
+          <field name="name">OTHERS</field>
+          <field name="code">OTH</field>
+        </record>
+    </data>
+</odoo>
