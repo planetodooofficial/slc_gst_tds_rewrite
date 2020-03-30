@@ -1,8 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="view_account_period_form" model="ir.ui.view">
-            <field name="name">account.period.form</field>
+        <record id="gst_account_period_search" model="ir.ui.view">
+            <field name="name">gst.account.period.search</field>
+            <field name="model">account.period</field>
+            <field name="arch" type="xml">
+                <search string="Search Fiscal Period">
+                    <field name="name"
+                           filter_domain="['|', ('name','ilike',self), ('code','ilike',self)]"
+                           string="Fiscal Period"/>
+                    <filter string="To be Closed"
+                            name="draft"/>
+                </search>
+            </field>
+        </record>
+        <record id="gst_account_period_tree" model="ir.ui.view">
+            <field name="name">gst.account.period.tree</field>
+            <field name="model">account.period</field>
+            <field name="arch" type="xml">
+                <tree string="Account Period">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="start_period"/>
+                    <field name="end_period"/>
+                    <field name="open_close_period"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+        <record id="gst_account_period_form" model="ir.ui.view">
+            <field name="name">gst.account.period.form</field>
             <field name="model">account.period</field>
             <field name="arch" type="xml">
                 <form string="Account Period">
@@ -10,16 +37,16 @@
                         <group>
                             <group>
                                 <field name="name"/>
-                                <field name="fiscalyear_id" widget="selection"/>
-                                <label for="date_start" string="Duration"/>
+                                <field name="fiscal_year_id" widget="selection"/>
+                                <label for="start_period" string="Duration"/>
                                 <div>
-                                    <field name="date_start" class="oe_inline" nolabel="1"/> -
-                                    <field name="date_stop" nolabel="1" class="oe_inline"/>
+                                    <field name="start_period" class="oe_inline" nolabel="1"/> -
+                                    <field name="end_period" nolabel="1" class="oe_inline"/>
                                 </div>
                             </group>
                             <group>
                                 <field name="code"/>
-                                <field name="special"/>
+                                <field name="open_close_period"/>
                                 <field name="company_id" widget="selection" groups="base.group_multi_company"/>
                             </group>
                         </group>
@@ -27,45 +54,14 @@
                 </form>
             </field>
         </record>
-
-        <record id="view_account_period_tree" model="ir.ui.view">
-            <field name="name">account.period.tree</field>
-            <field name="model">account.period</field>
-            <field name="arch" type="xml">
-                <tree string="Period">
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="date_start"/>
-                    <field name="date_stop"/>
-                    <field name="special"/>
-                    <field name="company_id" groups="base.group_multi_company"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="view_account_period_search" model="ir.ui.view">
-            <field name="name">account.period.search</field>
-            <field name="model">account.period</field>
-            <field name="arch" type="xml">
-                <search string="Search Period">
-                    <field name="name" filter_domain="['|', ('name','ilike',self), ('code','ilike',self)]" string="Period"/>
-                    <filter string="To Close" name="draft" icon="terp-dialog-close"/>
-                </search>
-            </field>
-        </record>
-
-        <record id="action_account_period" model="ir.actions.act_window">
-            <field name="name">Periods</field>
+        <record id="gst_account_period_action" model="ir.actions.act_window">
+            <field name="name">Account Period</field>
             <field name="res_model">account.period</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'search_default_draft': 1}</field>
+            <field name="context">{'search_draft_ids': 1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                Click to add a fiscal period.
-                </p>
-                <p>
-                An accounting period typically is a month or a quarter. It
-                usually corresponds to the periods of the tax declaration.
+                    Add the Fiscal period, which typically consists of a month or three months.
                 </p>
             </field>
         </record>

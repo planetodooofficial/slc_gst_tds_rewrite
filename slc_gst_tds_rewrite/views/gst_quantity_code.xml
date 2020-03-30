@@ -6,8 +6,8 @@
             <field name="model">unit.quantity.code</field>
             <field name="arch" type="xml">
                 <tree string="Unit Quantity Code" editable="bottom">
-                    <field name="name" required="1" groups="slc_gst_tds_rewrite.group_gst_admin,slc_gst_tds_rewrite.group_gst_user"/>
-                    <field name="code" required="1" groups="slc_gst_tds_rewrite.group_gst_admin,slc_gst_tds_rewrite.group_gst_user"/>
+                    <field name="name" required="1" groups="slc_gst_tds_rewrite.gst_admin_access,slc_gst_tds_rewrite.gst_user_access"/>
+                    <field name="code" required="1" groups="slc_gst_tds_rewrite.gst_admin_access,slc_gst_tds_rewrite.gst_user_access"/>
                 </tree>
             </field>
         </record>

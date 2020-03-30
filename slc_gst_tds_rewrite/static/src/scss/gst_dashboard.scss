@@ -37,7 +37,6 @@
 
                     // X axis
                     g.nv-x.nv-axis {
-                        // move the labels up, so they aren't hidden below the graph, and the lines back down.
                         transform: translateY(50px);
                         line {
                             transform: translateY(30px);
@@ -52,18 +51,11 @@
                             display: none;
                         }
                         g.tick.major {
-                            // Don't know why, but leads to strange bold text
-                            // stroke: $o-brand-odoo;
-
                             line {
                                 display: none;
                             }
                         }
                     }
-
-                    // !important are needed because nvd3 uses inline style on elements
-
-                    // Remove strokes
                     g.nv-linesWrap {
                         g.nv-group.nv-series-0 {
                             fill-opacity: 0.3 !important;
@@ -97,23 +89,11 @@
         margin-top: 25px;
         left: 15px;
     }
-    .not_type {
-        color: #c9302c;
-    }
-    .ready_type {
-        color: #ec971f;
-    }
-    .up_type {
-        color: #286090;
-    }
-    .file_type {
-        color: #87c087;
-    }
     .wk_label {
-        color: #7986CB;
+        color: #0a0004;
     }
     .wk_kanban_button {
-        color: #5C6BC0;
+        color: #0a0004;
     }
 
     

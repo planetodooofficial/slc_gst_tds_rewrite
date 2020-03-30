@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><odoo>
 	<data>
-        <template id="wk_report_account_invoice_inherit" inherit_id="account.report_invoice_document">
+        <template id="gst_tax_report_account_inherit" inherit_id="account.report_invoice_document">
             <xpath expr="//div[@class='clearfix']" position="after">
                 <div class="row" t-if="len(o.tax_line_ids) > 1">
                     <div class="col-xs-6">

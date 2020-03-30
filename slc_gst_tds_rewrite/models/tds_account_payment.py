@@ -5,7 +5,7 @@ class PaymentAccountTDS(models.Model):
     _inherit = "account.payment"
 
     tds_ids = fields.Many2one('account.tax', string='Select TDS')
-    partner_type = fields.Selection(related='partner_id.company_type', string='Select Partner')
+    vendor_type = fields.Selection(related='partner_id.company_type', string='Select Partner')
     apply_tds = fields.Boolean('Apply TDS', default=False)
     tds_added = fields.Float('TDS amount added')
 

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="gst_wk_ir_attachment_tree_view" model="ir.ui.view">
-            <field name="name">ir.attachment.tree.gst</field>
+        <record id="gst_ir_attachment_tree" model="ir.ui.view">
+            <field name="name">gst.ir.attachment.tree</field>
             <field name="model">ir.attachment</field>
             <field name="arch" type="xml">
-                <tree string="GST Attachments">
+                <tree string="Invoice Attachments">
                     <field name="name"/>
                     <field name="store_fname"/>
                     <field name="res_model"/>

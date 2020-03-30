@@ -7,87 +7,56 @@ from odoo.exceptions import RedirectWarning, UserError
 from odoo.osv import expression
 
 
-class AccountFiscalyear(models.Model):
-    _name = "account.fiscalyear"
-    _description = "Fiscal Year"
-    _order = "date_start, id"
+class AccountFiscalYear(models.Model):
+    _name = "account.fiscal_year"
+    _order = "start_period, id"
 
     name = fields.Char('Fiscal Year', required=True)
-    code = fields.Char('Code', size=6, required=True)
+    code = fields.Char('Reference Number', size=6, required=True)
     company_id = fields.Many2one('res.company', 'Company', required=True,
-        default=lambda self: self.env['res.company']._company_default_get('account.move'))
-    date_start = fields.Date('Start Date', required=True,
-        default=lambda *a: time.strftime('%Y-%m-01 %H:59:%S'))
-    date_stop = fields.Date('End Date', required=True,
-        default=lambda *a: time.strftime('%Y-12-31 %H:59:%S'))
-    period_ids = fields.One2many('account.period', 'fiscalyear_id', 'Periods')
+                                 default=lambda self: self.env['res.company']._company_default_get('account.move'))
+    start_period = fields.Date('Start of Fiscal Period', required=True,
+                               default=lambda *a: time.strftime('%Y-%m-01 %H:59:%S'))
+    end_period = fields.Date('End of Fiscal Period', required=True,
+                             default=lambda *a: time.strftime('%Y-12-31 %H:59:%S'))
+    fy_ids = fields.One2many('account.period', 'fiscal_year_id', 'Fiscal Year Periods')
 
-    @api.constrains('date_start', 'date_stop')
-    def _check_duration(self):
-        if self.date_stop < self.date_start:
-            raise UserError(_('Error!\nThe start date of a fiscal year must precede its end date.'))
-
-    def create_period3(self):
-        return self.create_period(3)
-
-    def create_period1(self):
-        return self.create_period(1)
+    @api.constrains('start_period', 'end_period')
+    def check_start_end_periods(self):
+        if self.end_period < self.start_period:
+            raise UserError(_('End period is before start period'))
 
     def create_period(self, interval=1):
-        period_obj = self.env['account.period']
-        for fy in self:
-            date_start = fy.date_start
-            period_obj.create({
-                'name': "%s %s" % (_('Opening Period'), date_start.strftime('%Y')),
-                'code': date_start.strftime('00/%Y'),
-                'date_start': date_start,
-                'date_stop': date_start,
-                'special': True,
-                'fiscalyear_id': fy.id,
+        fiscal_period_obj = self.env['account.period']
+        for period in self:
+            start_period = period.start_period
+            fiscal_period_obj.create({
+                'name': "%s %s" % (_('Opening Fiscal Period'), start_period.strftime('%Y')),
+                'code': start_period.strftime('00/%Y'),
+                'start_period': start_period,
+                'end_period': start_period,
+                'open_close_period': True,
+                'fiscal_year_id': period.id,
             })
-            while date_start < fy.date_stop:
-                date_end = date_start + relativedelta(months=interval, days=-1)
-                if date_end > fy.date_stop:
-                    date_end = fy.date_stop
-                period_obj.create({
-                    'name': date_start.strftime('%b-%Y'),
-                    'code': date_start.strftime('%m/%Y'),
-                    'date_start': date_start,
-                    'date_stop': date_end,
-                    'fiscalyear_id': fy.id,
+            while start_period < period.end_period:
+                date_end = start_period + relativedelta(months=interval, days=-1)
+                if date_end > period.end_period:
+                    date_end = period.end_period
+                fiscal_period_obj.create({
+                    'name': start_period.strftime('%b-%Y'),
+                    'code': start_period.strftime('%m/%Y'),
+                    'start_period': start_period,
+                    'end_period': date_end,
+                    'fiscal_year_id': period.id,
                 })
-                date_start = date_start + relativedelta(months=interval)
+                start_period = start_period + relativedelta(months=interval)
         return True
 
-    @api.model
-    def find(self, dt=None, exception=True):
-        res = self.finds(dt, exception)
-        return res and res[0] or False
+    def create_quarterly_period(self):
+        return self.create_period(3)
 
-    @api.model
-    def finds(self, date_obj=None, exception=True):
-        context = self._context
-        if context is None: context = {}
-        if not date_obj:
-            date_obj = fields.date.context_today(self)
-        args = [('date_start', '<=', date_obj), ('date_stop', '>=', date_obj)]
-        if context.get('company_id', False):
-            company_id = context['company_id']
-        else:
-            company_id = self.env['res.users'].browse(self._uid).company_id.id
-        args.append(('company_id', '=', company_id))
-        objs = self.search(args)
-        if not objs:
-            if exception:
-                model, action_id = self.env['ir.model.data'].get_object_reference(
-                        'account', 'action_account_fiscalyear')
-                msg = _('There is no period defined for this date: %s.' \
-                        '\nPlease go to Configuration/Periods and configure a fiscal year.') % date_obj
-                raise RedirectWarning(msg, action_id, _('Go to the configuration panel'))
-            else:
-                return []
-        ids = objs.ids
-        return ids
+    def create_monthly_period(self):
+        return self.create_period(1)
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
@@ -97,5 +66,30 @@ class AccountFiscalyear(models.Model):
             domain = [('code', operator, name), ('name', operator, name)]
         else:
             domain = ['|', ('code', operator, name), ('name', operator, name)]
-        objs = self.search(expression.AND([domain, args]), limit=limit)
-        return objs.name_get()
+        name_search_obj = self.search(expression.AND([domain, args]), limit=limit)
+        return name_search_obj.name_get()
+
+    @api.model
+    def find(self, today_date=None, exception=True):
+        context = self._context
+        if context is None:
+            context = {}
+        if not today_date:
+            today_date = fields.date.context_today(self)
+        start_end_check = [('start_period', '<=', today_date), ('end_period', '>=', today_date)]
+        if context.get('company_id', False):
+            company_id = context['company_id']
+        else:
+            company_id = self.env['res.users'].browse(self._uid).company_id.id
+        start_end_check.append(('company_id', '=', company_id))
+        start_end_obj = self.search(start_end_check)
+        if not start_end_obj:
+            if exception:
+                model, go_to_id = self.env['ir.model.data'].get_object_reference('account',
+                                                                                 'gst_account_fiscal_year_action')
+                raise RedirectWarning(_('Please go to Configuration panel since there is no period defined for: %s')
+                                      % today_date, go_to_id)
+            else:
+                return []
+        start_end_ids = start_end_obj.ids
+        return start_end_ids and start_end_ids[0] or False

@@ -19,7 +19,7 @@
                            attrs="{'invisible':[('apply_tds','=', False)],
 	    			               'readonly': [('state', '!=', 'draft')],
 	    			               'required': [('apply_tds','=',True)]}"/>
-                    <field name="partner_type" invisible="1"/>
+                    <field name="vendor_type" invisible="1"/>
                 </group>
             </xpath>
 	    </field>

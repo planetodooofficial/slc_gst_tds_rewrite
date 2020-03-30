@@ -1,46 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="view_account_fiscalyear_form" model="ir.ui.view">
-            <field name="name">account.fiscalyear.form</field>
-            <field name="model">account.fiscalyear</field>
+        <record id="gst_account_fiscal_year_tree" model="ir.ui.view">
+            <field name="name">gst.account.fiscal.year.tree</field>
+            <field name="model">account.fiscal_year</field>
             <field name="arch" type="xml">
-                <form string="Fiscal year">
-                <header>
-                    <button name="create_period1" string="Create Monthly Periods" type="object" class="oe_highlight"/>
-                    <button name="create_period3" string="Create 3 Months Periods" type="object" class="oe_highlight"/>
-                </header>
-                    <group>
-                        <group>
-                            <field name="name"/>
-                            <field name="code"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                        </group>
-                        <group>
-                            <field name="date_start"/>
-                            <field name="date_stop"/>
-                        </group>
-                    </group>
-                    <field colspan="4" name="period_ids" nolabel="1" widget="one2many_list" readonly='1'>
-                        <form string="Period">
-                            <group col="4">
-                                <field name="name"/>
-                                <field name="code"/>
-                                <field name="date_start"/>
-                                <field name="date_stop"/>
-                                <field name="special"/>
-                            </group>
-                        </form>
-                    </field>
-                </form>
-            </field>
-        </record>
-
-        <record id="view_account_fiscalyear_tree" model="ir.ui.view">
-            <field name="name">account.fiscalyear.tree</field>
-            <field name="model">account.fiscalyear</field>
-            <field name="arch" type="xml">
-                <tree string="Fiscalyear">
+                <tree string="Fiscal Period">
                     <field name="code"/>
                     <field name="name"/>
                     <field name="company_id" groups="base.group_multi_company"/>
@@ -48,31 +13,59 @@
             </field>
         </record>
 
-        <record id="view_account_fiscalyear_search" model="ir.ui.view">
-            <field name="name">account.fiscalyear.search</field>
-            <field name="model">account.fiscalyear</field>
+        <record id="gst_account_fiscal_year_form" model="ir.ui.view">
+            <field name="name">gst.account.fiscal.year.form</field>
+            <field name="model">account.fiscal_year</field>
             <field name="arch" type="xml">
-                <search string="Search Fiscalyear">
-                    <field name="name" filter_domain="['|', ('name','ilike',self), ('code','ilike',self)]" string="Fiscal Year"/>
+                <form string="Create Fiscal Year">
+                <header>
+                    <button name="create_monthly_period" string="Create Monthly Periods" type="object" class="oe_highlight"/>
+                    <button name="create_quarterly_period" string="Create Quarterly Periods" type="object" class="oe_highlight"/>
+                </header>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="start_period"/>
+                            <field name="end_period"/>
+                        </group>
+                    </group>
+                    <field colspan="4" name="fy_ids" nolabel="1" widget="one2many_list" readonly='1'>
+                        <form string="Fiscal Period">
+                            <group col="4">
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="start_period"/>
+                                <field name="end_period"/>
+                                <field name="open_close_period"/>
+                            </group>
+                        </form>
+                    </field>
+                </form>
+            </field>
+        </record>
+
+        <record id="gst_account_fiscal_year_search" model="ir.ui.view">
+            <field name="name">gst.account.fiscal.year.search</field>
+            <field name="model">account.fiscal_year</field>
+            <field name="arch" type="xml">
+                <search string="Search Fiscaly Period">
+                    <field name="name"
+                           filter_domain="['|', ('name','ilike',self),
+                                                ('code','ilike',self)]"
+                           string="Fiscal Year"/>
                 </search>
             </field>
         </record>
 
-        <record id="action_account_fiscalyear" model="ir.actions.act_window">
-            <field name="name">Fiscal Years</field>
-            <field name="res_model">account.fiscalyear</field>
+        <record id="gst_account_fiscal_year_action" model="ir.actions.act_window">
+            <field name="name">Fiscal Periods</field>
+            <field name="res_model">account.fiscal_year</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                Click to start a new fiscal year.
-                </p><p>
-                Define your company's financial year according to your needs. A
-                financial year is a period at the end of which a company's
-                accounts are made up (usually 12 months). The financial year is
-                usually referred to by the date in which it ends. For example,
-                if a company's financial year ends November 30, 2011, then
-                everything between December 1, 2010 and November 30, 2011
-                would be referred to as FY 2011.
+                    Add the financial year, which is a 12 months period.
                 </p>
             </field>
         </record>

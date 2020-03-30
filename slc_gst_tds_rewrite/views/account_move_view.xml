@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
                 <field name="invoice_line_ids" position="after">
                     <div class="oe_left">
-                        <field name="partner_type" invisible="1"/>
+                        <field name="vendor_type" invisible="1"/>
                         <label for="apply_tds"/>
                         <field name="apply_tds" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         <field name="tds_ids"
@@ -53,12 +53,12 @@
                 <page name="other_info" position="inside">
                     <group string="GST">
                         <group col="2">
-                            <field name="gst_status" />
+                            <field name="invoice_type_status" />
                             <field name="invoice_type" />
                             <field name="export" attrs="{'invisible':[('type', 'not in', ('in_invoice', 'in_refund', 'in_receipt')), ('invoice_type','!=','export')]}"/>
                         </group>
                         <group col="2">
-                            <field name="itc_eligibility" attrs="{'invisible': [('type', '=', 'out_invoice')]}"/>
+                            <field name="avail_itc_eligible" attrs="{'invisible': [('type', '=', 'out_invoice')]}"/>
                             <field name="reverse_charge"/>
                             <field name="l10n_in_partner_vat"/>
                         </group>
@@ -77,10 +77,10 @@
                     <filter name="b2b" string="B2B" domain="[('invoice_type','=','b2b')]"/>
                     <filter name="b2cs" string="B2CS" domain="[('invoice_type','=','b2cs')]"/>
                     <filter name="b2cl" string="B2CL" domain="[('invoice_type','=','b2cl')]"/>
-                    <filter name="wpay" string="Export WPay" domain="[('export','=','WPAY')]"/>
-                    <filter name="wopay" string="Export WoPay" domain="[('export','=','WOPAY')]"/>
+                    <filter name="wpay" string="Export WPay" domain="[('export','=','with_pay')]"/>
+                    <filter name="wopay" string="Export WoPay" domain="[('export','=','without_pay')]"/>
                     <group expand="0" string="Group By">
-                        <filter string="GST Status" name="filter_by_gst_status" domain="[]" context="{'group_by':'gst_status'}"/>
+                        <filter string="Invoice Status" name="filter_by_invoice_type_status" domain="[]" context="{'group_by':'invoice_type_status'}"/>
                     </group>
                 </field>
             </field>
@@ -95,11 +95,11 @@
                     <field name="partner_id"/>
                     <field name="currency_id"/>
                     <field name="amount_total_signed" string="Total" sum="Total"/>
-                    <field name="inr_total" string="INR Total" sum="Total"/>
+                    <field name="amount_total" string="Total Amount(INR)" sum="Total"/>
                     <field name="invoice_date"/>
                     <field name="state"/>
                     <field name="type"/>
-                    <field name="gst_status" />
+                    <field name="invoice_type_status" />
                     <field name="invoice_type" />
                 </tree>
             </field>

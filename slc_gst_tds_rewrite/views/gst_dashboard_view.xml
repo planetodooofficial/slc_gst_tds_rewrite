@@ -17,13 +17,13 @@
                                         <span>Invoice Status</span>
                                     </div>
                                     <div>
-                                        <a type="object" name="get_gst_invoice" context="{'status':'not_uploaded'}">Yet To Upload</a>
+                                        <a type="object" name="get_gst_invoice" context="{'status':'yet_to_upload'}">Yet To Upload</a>
                                     </div>
                                     <div>
-                                        <a type="object" name="get_gst_invoice" context="{'status':'ready_to_upload'}">Ready to upload</a>
+                                        <a type="object" name="get_gst_invoice" context="{'status':'ready_upload'}">Ready to upload</a>
                                     </div>
                                     <div>
-                                        <a type="object" name="get_gst_invoice" context="{'status':'uploaded'}">Upload Complete</a>
+                                        <a type="object" name="get_gst_invoice" context="{'status':'upload_complete'}">Upload Complete</a>
                                     </div>
                                     <div>
                                         <a type="object" name="get_gst_invoice" context="{'status':'filed'}">Document Filed</a>
@@ -59,28 +59,28 @@
                             </div>
                         </t>
                         <t t-name="B2B">
-                            <t t-call="gst_status_update"/>
+                            <t t-call="invoice_type_status_update"/>
                         </t>
                         <t t-name="B2BUR">
-                            <t t-call="gst_status_update"/>
+                            <t t-call="invoice_type_status_update"/>
                         </t>
                         <t t-name="B2CS">
-                            <t t-call="gst_status_update"/>
+                            <t t-call="invoice_type_status_update"/>
                         </t>
                         <t t-name="B2CL">
-                            <t t-call="gst_status_update"/>
+                            <t t-call="invoice_type_status_update"/>
                         </t>
                         <t t-name="IMPORT">
-                            <t t-call="gst_status_update"/>
+                            <t t-call="invoice_type_status_update"/>
                         </t>
                         <t t-name="EXPORT">
-                            <t t-call="gst_status_update"/>
+                            <t t-call="invoice_type_status_update"/>
                         </t>
-                        <t t-name="gst_status_update">
+                        <t t-name="invoice_type_status_update">
                             <div class="col-6 o_kanban_primary_right">
                                 <div class="row">
                                     <div class="col-6">
-                                        <a type="object" name="action_invoice_status" context="{'gst_status':'not_uploaded'}">
+                                        <a type="object" name="action_invoice_status" context="{'invoice_type_status':'yet_to_upload'}">
                                             <span class="status_no_upload" title="Yet To Upload">
                                                 <field name="count_yet_to_upload"/> Yet To Upload
                                             </span>
@@ -94,7 +94,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
-                                        <a type="object" name="action_invoice_status" context="{'gst_status':'ready_to_upload'}">
+                                        <a type="object" name="action_invoice_status" context="{'invoice_type_status':'ready_upload'}">
                                             <span class="status_ready" title="Ready to upload">
                                                 <field name="count_ready_upload"/> Ready to upload
                                             </span>
@@ -108,8 +108,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
-                                        <a type="object" name="action_invoice_status" context="{'gst_status':'uploaded'}">
-                                            <span class="status_uploaded" title="Upload Complete">
+                                        <a type="object" name="action_invoice_status" context="{'invoice_type_status':'upload_complete'}">
+                                            <span class="status_upload_complete" title="Upload Complete">
                                                 <field name="count_upload_complete"/> Upload Complete
                                             </span>
                                         </a>
@@ -122,7 +122,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
-                                        <a type="object" name="action_invoice_status" context="{'gst_status':'filed'}">
+                                        <a type="object" name="action_invoice_status" context="{'invoice_type_status':'filed'}">
                                             <span class="status_filed" title="Filed">
                                                 <field name="count_filed"/> Document Filed
                                             </span>

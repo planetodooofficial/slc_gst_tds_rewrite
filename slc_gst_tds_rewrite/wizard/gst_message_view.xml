@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 <data>
-    <record id="message_wizard_form1" model="ir.ui.view">
+    <record id="wizard_message_form" model="ir.ui.view">
         <field name="name">message.wizard</field>
         <field name="model">message.wizard</field>
         <field name="type">form</field>
@@ -12,7 +12,7 @@
                 <newline/>
                 <separator colspan="6"/>
                 <footer>
-                    <button special="cancel" class="oe_highlight" icon="fa-archive" string="Close" />
+                    <button special="cancel" class="oe_highlight" string="Done" />
                 </footer>
             </form>
         </field>

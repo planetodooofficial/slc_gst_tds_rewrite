@@ -5,15 +5,21 @@
             <field name="name">uom.mapping.tree</field>
             <field name="model">uom.mapping</field>
             <field name="arch" type="xml">
-                <tree string="UOM Mapping" editable="bottom">
-                    <field name="name" required="1" groups="slc_gst_tds_rewrite.group_gst_admin,slc_gst_tds_rewrite.group_gst_user"/>
-                    <field name="uom" required="1" groups="slc_gst_tds_rewrite.group_gst_admin,slc_gst_tds_rewrite.group_gst_user"/>
+                <tree string="Mapping Unit of Measure" editable="bottom">
+                    <field name="name"
+                           required="1"
+                           groups="slc_gst_tds_rewrite.gst_admin_access,
+                                   slc_gst_tds_rewrite.gst_user_access"/>
+                    <field name="uom"
+                           required="1"
+                           groups="slc_gst_tds_rewrite.gst_admin_access,
+                                   slc_gst_tds_rewrite.gst_user_access"/>
                 </tree>
             </field>
         </record>
 
         <record id="gst_uom_map_action" model="ir.actions.act_window">
-            <field name="name">UOM Mapping</field>
+            <field name="name">Mapping Unit of Measure</field>
             <field name="res_model">uom.mapping</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="gst_uom_map_tree"/>

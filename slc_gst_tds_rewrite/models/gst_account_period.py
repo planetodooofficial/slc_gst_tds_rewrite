@@ -5,93 +5,75 @@ from odoo.osv import expression
 from odoo.exceptions import UserError, RedirectWarning
 
 
-class AccountPeriod(models.Model):
+class AccountPeriodGST(models.Model):
     _name = "account.period"
-    _description = "Account period"
-    _order = "date_start, special desc"
+    _order = "start_period, open_close_period desc"
 
-    @api.depends('date_stop')
-    def _get_special(self):
-        from_date = fields.Date.today() - timedelta(days=30)
-        for obj in self:
-            if obj.date_stop and obj.date_stop < from_date:
-                obj.special = True
-            else:
-                obj.special = False
-
-    name = fields.Char('Period Name', required=True)
-    code = fields.Char('Code', size=12)
-    special = fields.Boolean('Opening/Closing Period',
-                             help="These periods can overlap.", compute='_get_special')
-    date_start = fields.Date('Start of Period', required=True)
-    date_stop = fields.Date('End of Period', required=True)
-    fiscalyear_id = fields.Many2one('account.fiscalyear', 'Fiscal Year', required=True)
+    name = fields.Char('Fiscal Period Name', required=True)
+    code = fields.Char('Reference Number')
+    open_close_period = fields.Boolean('Opening/Closing of Fiscal Period', compute='compute_open_close_period')
+    start_period = fields.Date('Start of Fiscal Period', required=True)
+    end_period = fields.Date('End of Fiscal Period', required=True)
+    fiscal_year_id = fields.Many2one('account.fiscal_year', 'Fiscal Year', required=True)
     company_id = fields.Many2one('res.company', string='Company',
-                                 related='fiscalyear_id.company_id', store=True, readonly=True)
+                                 related='fiscal_year_id.company_id', store=True, readonly=True)
 
-    _sql_constraints = [
-        ('name_company_uniq', 'unique(name, company_id)',
-         'The name of the period must be unique per company!'),
-    ]
+    _sql_constraints = [('unique_company_name', 'unique(name, company_id)',
+                         'The period name should be unique for each company!'), ]
 
-    @api.constrains('date_stop')
-    def _check_duration_and_year_limit(self):
-        if self.date_stop < self.date_start:
-            raise UserError(
-                _('Error!\nThe duration of the Period(s) is/are invalid.'))
-        for obj_period in self:
-            if obj_period.special:
+    @api.constrains('end_period')
+    def check_start_end_periods(self):
+        if self.end_period < self.start_period:
+            raise UserError(_('End period is before start period'))
+        for start_end_check in self:
+            if start_end_check.open_close_period:
                 continue
-            if obj_period.fiscalyear_id.date_stop < obj_period.date_stop or \
-               obj_period.fiscalyear_id.date_stop < obj_period.date_start or \
-               obj_period.fiscalyear_id.date_start > obj_period.date_start or \
-               obj_period.fiscalyear_id.date_start > obj_period.date_stop:
-                return False
-            pidObjs = self.search([('date_stop', '>=', obj_period.date_start),
-                                   ('date_start', '<=', obj_period.date_stop),
-                                   ('id', '<>', obj_period.id)])
-            for period in pidObjs:
-                pastMonth = fields.Date.today() - timedelta(days=30)
-                dateStop = period.date_stop
-                if dateStop > pastMonth and dateStop < fields.Date.today():
+            if start_end_check.fiscal_year_id.end_period < start_end_check.end_period:
+                if start_end_check.fiscal_year_id.end_period < start_end_check.start_period:
+                    if start_end_check.fiscal_year_id.start_period > start_end_check.start_period:
+                        if start_end_check.fiscal_year_id.start_period > start_end_check.end_period:
+                            return False
+            start_end_obj = self.search([('id', '<>', start_end_check.id),
+                                         ('start_period', '<=', start_end_check.end_period),
+                                         ('end_period', '>=', start_end_check.start_period)
+                                         ])
+            for period in start_end_obj:
+                if fields.Date.today() - timedelta(days=30) < period.end_period < fields.Date.today():
                     continue
-                if period.fiscalyear_id.company_id.id == obj_period.fiscalyear_id.company_id.id:
-                    raise UserError(_('Error!\nThe period is invalid. ' \
-                        'Either some periods are overlapping ' \
-                        'or the period\'s dates are not matching the scope of the fiscal year.'))
+                if period.fiscal_year_id.company_id.id == start_end_check.fiscal_year_id.company_id.id:
+                    raise UserError(_('The period is either wrong or overlapping'))
 
     @api.returns('self')
-    def next(self, period, step):
-        ids = self.search([('date_start', '>', period.date_start)])
-        if len(ids) >= step:
-            return ids[step - 1]
-        return False
-
-    @api.returns('self')
-    def find(self, date_obj=None):
+    def find(self, today_date=None):
         context = self._context
-        if context is None: context = {}
-        if not date_obj:
-            date_obj = fields.date.context_today(self)
-        args = [('date_start', '<=', date_obj), ('date_stop', '>=', date_obj)]
+        if context is None:
+            context = {}
+        if not today_date:
+            today_date = fields.date.context_today(self)
+        start_end_find = [('start_period', '<=', today_date), ('end_period', '>=', today_date)]
         if context.get('company_id', False):
-            args.append(('company_id', '=', context['company_id']))
+            start_end_find.append(('company_id', '=', context['company_id']))
         else:
             company_id = self.env['res.users'].browse(self._uid).company_id.id
-            args.append(('company_id', '=', company_id))
-        result = []
+            start_end_find.append(('company_id', '=', company_id))
+        find_period = []
         if context.get('account_period_prefer_normal', True):
-            # look for non-special periods first, and fallback to all if no result is found
-            result = self.search(args + [('special', '=', False)])
-        if not result:
-            result = self.search(args)
-        if not result:
-            model, action_id = self.env['ir.model.data'].get_object_reference(
-                'account', 'action_account_period')
-            msg = _('There is no period defined for this date: %s.' \
-                    '\nPlease go to Configuration/Periods.') % date_obj
-            raise RedirectWarning(msg, action_id, _('Go to the configuration panel'))
-        return result
+            find_period = self.search(find_period + [('open_close_period', '=', False)])
+        if not find_period:
+            find_period = self.search(find_period)
+        if not find_period:
+            model, go_to_id = self.env['ir.model.data'].get_object_reference('account', 'gst_account_period_action')
+            raise RedirectWarning(_('Please go to Configuration panel since there is no period defined for: %s')
+                                  % today_date
+                                  , go_to_id)
+        return find_period
+
+    @api.returns('self')
+    def next(self, period, count_start):
+        start_id_next = self.search([('start_period', '>', period.start_period)])
+        if len(start_id_next) >= count_start:
+            return start_id_next[count_start - 1]
+        return False
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
@@ -106,32 +88,36 @@ class AccountPeriod(models.Model):
 
     def write(self, vals):
         if 'company_id' in vals:
-            move_lines = self.env['account.move.line'].search([
-                ('period_id', 'in', self.ids)
-            ])
-            if move_lines:
-                raise UserError(_('Warning!'), _('This journal already contains items for this period, ' \
-                                                 'therefore you cannot modify its company field.'))
-        return super(AccountPeriod, self).write(vals)
+            account_move_lines = self.env['account.move.line'].search([('fy_id', 'in', self.ids)])
+            if account_move_lines:
+                raise UserError(_('Company Field cannot be modified since journal items already exists'))
+        return super(AccountPeriodGST, self).write(vals)
 
     @api.model
-    def build_context_periods(self, period_from_id, period_to_id):
-        if period_from_id == period_to_id:
-            return [period_from_id]
-        period_from = self.browse(period_from_id)
-        period_date_start = period_from.date_start
-        company1_id = period_from.company_id.id
-        period_to = self.browse(period_to_id)
-        period_date_stop = period_to.date_stop
-        company2_id = period_to.company_id.id
-        if company1_id != company2_id:
-            raise UserError(_('Error!'), _('You should choose the periods that belong to the same company.'))
-        if period_date_start > period_date_stop:
-            raise UserError(_('Error!'), _('Start period should precede then end period.'))
+    def compute_start_end_period(self, start_id, end_id):
+        start_period = self.browse(start_id).start_period
+        end_period = self.browse(end_id).end_period
+        if self.browse(start_id).company_id.id != self.browse(end_id).company_id.id:
+            raise UserError(_('Please choose the same company'))
 
-        if period_from.special:
-            return self.search([('date_start', '>=', period_date_start),
-                                ('date_stop', '<=', period_date_stop)])
-        return self.search([('date_start', '>=', period_date_start),
-                            ('date_stop', '<=', period_date_stop),
-                            ('special', '=', False)])
+        if start_period > end_period:
+            raise UserError(_('End period is before start period'))
+
+        if start_id == end_id:
+            return start_id
+
+        if self.browse(start_id).open_close_period:
+            return self.search([('start_period', '>=', start_period), ('end_period', '<=', end_period)])
+
+        return self.search([('open_close_period', '=', False), ('start_period', '>=', start_period),
+                            ('end_period', '<=', end_period)])
+
+    @api.depends('end_period')
+    def compute_open_close_period(self):
+        start_date = fields.Date.today() - timedelta(days=30)
+        for period in self:
+            if period.end_period:
+                if period.end_period < start_date:
+                    period.open_close_period = True
+                else:
+                    period.open_close_period = False

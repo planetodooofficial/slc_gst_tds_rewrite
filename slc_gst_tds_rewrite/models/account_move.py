@@ -1,6 +1,12 @@
 from odoo import api, fields, models, _
 
 
+class AccountTaxTDS(models.Model):
+    _inherit = "account.tax"
+
+    apply_tds = fields.Boolean('Apply TDS', default=False)
+
+
 class AccountMove(models.Model):
     _inherit = "account.move"
 
@@ -15,7 +21,7 @@ class AccountMove(models.Model):
                                 store=True, readonly=True, compute='_compute_amount')
     total_tds_amount = fields.Monetary(string='Total Amount After TDS',
                                        store=True, readonly=True, compute='_compute_amount')
-    partner_type = fields.Selection(related='partner_id.company_type', string='Select Partner')
+    vendor_type = fields.Selection(related='partner_id.company_type', string='Select Partner')
 
     def turnover_compute(self, partner_id, limit, total_tds):
         account_move = self.env['account.move.line'].search(
@@ -115,49 +121,33 @@ class AccountMove(models.Model):
                 tds.line_ids -= tax_lines
 
     # GST
-    gst_status = fields.Selection([
-        ('not_uploaded', 'Not Uploaded'),
-        ('ready_to_upload', 'Ready to upload'),
-        ('uploaded', 'Uploaded to govt'),
-        ('filed', 'Filed')
+    invoice_type_status = fields.Selection([
+        ('yet_to_upload', 'Yet to Upload'),
+        ('ready_upload', 'Ready to upload'),
+        ('upload_complete', 'Upload Complete'),
+        ('filed', 'Filed Documents')
     ],
-        string='GST Status',
-        default="not_uploaded",
-        copy=False,
-        help="status will be consider during gst import, "
+        string='Invoice Status',
+        default="yet_to_upload",
+        copy=False
     )
-    invoice_type = fields.Selection([
-        ('b2b', 'B2B'),
-        ('b2cl', 'B2CL'),
-        ('b2cs', 'B2CS'),
-        ('b2bur', 'B2BUR'),
-        ('import', 'IMPS/IMPG'),
-        ('export', 'Export')
-    ],
-        copy=False,
-        string='Invoice Type')
-    export = fields.Selection([
-        ('WPAY', 'WPay'),
-        ('WOPAY', 'WoPay')
-    ],
-        string='Export'
-    )
-    itc_eligibility = fields.Selection([
+    invoice_type = fields.Selection([('import', 'Import'),
+                                     ('export', 'Export'),
+                                     ('b2b', 'B2B'),
+                                     ('b2bur', 'B2BUR'),
+                                     ('b2cl', 'B2CL'),
+                                     ('b2cs', 'B2CS')],
+                                    copy=False,
+                                    string='Invoice Type')
+    export = fields.Selection([('with_pay', 'WPay'), ('without_pay', 'WoPay')], string='Export')
+    avail_itc_eligible = fields.Selection([
         ('Inputs', 'Inputs'),
         ('Capital goods', 'Capital goods'),
         ('Input services', 'Input services'),
         ('Ineligible', 'Ineligible'),
     ],
-        string='ITC Eligibility',
+        string='Eligibility to avail ITC',
         default='Ineligible'
     )
-    reverse_charge = fields.Boolean(
-        string='Reverse Charge',
-        help="Allow reverse charges for b2b invoices")
-    inr_total = fields.Float(string='INR Total')
-
-
-class AccountInvoiceTax(models.Model):
-    _inherit = "account.tax"
-
-    apply_tds = fields.Boolean('TDS', default=False)
+    reverse_charge = fields.Boolean(string='Reverse Charge')
+    amount_total = fields.Float(string='Total Amount(INR)')

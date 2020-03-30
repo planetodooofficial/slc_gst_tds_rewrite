@@ -2,18 +2,54 @@
 from odoo import api, models
 
 
-class CsvColumn(models.TransientModel):
-    _name = "csv.column"
-    _description = "CSV column"
+class WizardDataCSV(models.TransientModel):
+    _name = "data.csv.wizard"
 
-    def getB2BColumn(self, gstType):
-        columns = []
-        if gstType == 'gstr1':
-            columns = [
-                'GSTIN/UIN of Recipient',
+    def HSN_data_create(self):
+        data_cols = [
+            'HSN',
+            'Description',
+            'Unit Code',
+            'Total Quantity',
+            'Total Value',
+            'Taxable Amount'
+            'Integrated Tax Amount',
+            'Central Tax Amount',
+            'State/UT Tax Amount',
+            'Cess Amount'
+        ]
+        return data_cols
+
+    def b2bur_data_create(self):
+        data_cols = [
+            'Supplier Name',
+            'Invoice Number',
+            'Date of Invoice',
+            'Invoice Value',
+            'Place Of Supply',
+            'Supply Type',
+            'Rate',
+            'Taxable Amount'
+            'Integrated Tax Paid',
+            'Central Tax Paid',
+            'State/UT Tax Paid',
+            'Cess Amount',
+            'Eligibility For ITC',
+            'Availed ITC Integrated Tax',
+            'Availed ITC Central Tax',
+            'Availed ITC State/UT Tax',
+            'Availed ITC Cess'
+        ]
+        return data_cols
+
+    def b2b_data_create(self, gst_return_type):
+        data_cols = []
+        if gst_return_type == 'gstr1':
+            data_cols = [
+                'GSTIN/UIN',
                 'Receiver Name',
                 'Invoice Number',
-                'Invoice date',
+                'Date of Invoice',
                 'Invoice Value',
                 'Place Of Supply',
                 'Reverse Charge',
@@ -21,20 +57,20 @@ class CsvColumn(models.TransientModel):
                 'Invoice Type',
                 'E-Commerce GSTIN',
                 'Rate',
-                'Taxable Value',
+                'Taxable Amount'
                 'Cess Amount'
             ]
-        if gstType == 'gstr2':
-            columns = [
-                'GSTIN of Supplier',
+        if gst_return_type == 'gstr2':
+            data_cols = [
+                'GSTIN',
                 'Invoice Number',
-                'Invoice date',
+                'Date of Invoice',
                 'Invoice Value',
                 'Place Of Supply',
                 'Reverse Charge',
                 'Invoice Type',
                 'Rate',
-                'Taxable Value',
+                'Taxable Amount'
                 'Integrated Tax Paid',
                 'Central Tax Paid',
                 'State/UT Tax Paid',
@@ -46,75 +82,53 @@ class CsvColumn(models.TransientModel):
                 'Availed ITC Cess'
             ]
 
-        return columns
+        return data_cols
 
-    def getB2BURColumn(self):
-        columns = [
-            'Supplier Name',
+    def b2cl_data_create(self):
+        data_cols = [
             'Invoice Number',
-            'Invoice date',
-            'Invoice Value',
-            'Place Of Supply',
-            'Supply Type',
-            'Rate',
-            'Taxable Value',
-            'Integrated Tax Paid',
-            'Central Tax Paid',
-            'State/UT Tax Paid',
-            'Cess Amount',
-            'Eligibility For ITC',
-            'Availed ITC Integrated Tax',
-            'Availed ITC Central Tax',
-            'Availed ITC State/UT Tax',
-            'Availed ITC Cess'
-        ]
-        return columns
-
-    def getB2CLColumn(self):
-        columns = [
-            'Invoice Number',
-            'Invoice date',
+            'Date of Invoice',
             'Invoice Value',
             'Place Of Supply',
             'Applicable % of Tax Rate',
             'Rate',
-            'Taxable Value',
+            'Taxable Amount'
             'Cess Amount',
             'E-Commerce GSTIN',
             'Sale from Bonded WH'
         ]
-        return columns
+        return data_cols
 
-    def getB2CSColumn(self):
-        columns = [
+    def b2cs_data_create(self):
+        data_cols = [
             'Type',
             'Place Of Supply',
             'Applicable % of Tax Rate',
             'Rate',
-            'Taxable Value',
+            'Taxable Amount'
             'Cess Amount',
             'E-Commerce GSTIN'
         ]
-        return columns
+        return data_cols
 
-    def getImpsColumn(self):
-        columns = [
+    def import_imps_data_create(self):
+        data_cols = [
             'Invoice Number of Reg Recipient',
-            'Invoice Date',
+            'Date of Invoice',
             'Invoice Value',
             'Place Of Supply',
             'Rate',
-            'Taxable Value',
+            'Taxable Amount'
             'Integrated Tax Paid',
             'Cess Amount',
             'Eligibility For ITC',
             'Availed ITC Integrated Tax',
             'Availed ITC Cess'
         ]
-        return columns
+        return data_cols
 
-    def getImpgColumn(self):
-        columns = [
+    def import_impg_data_create(self):
+        data_cols = [
             'Port Code',
             'Bill Of Entry Number',
             'Bill Of Entry Date',
@@ -122,20 +136,20 @@ class CsvColumn(models.TransientModel):
             'Document type',
             'GSTIN Of SEZ Supplier',
             'Rate',
-            'Taxable Value',
+            'Taxable Amount'
             'Integrated Tax Paid',
             'Cess Amount',
             'Eligibility For ITC',
             'Availed ITC Integrated Tax',
             'Availed ITC Cess'
         ]
-        return columns
+        return data_cols
 
-    def getExportColumn(self):
-        columns = [
+    def export_data_create(self):
+        data_cols = [
             'Export Type',
             'Invoice Number',
-            'Invoice date',
+            'Date of Invoice',
             'Invoice Value',
             'Port Code',
             'Shipping Bill Number',
@@ -144,19 +158,5 @@ class CsvColumn(models.TransientModel):
             'Rate',
             'Taxable Value'
         ]
-        return columns
+        return data_cols
 
-    def getHSNColumn(self):
-        columns = [
-            'HSN',
-            'Description',
-            'UQC',
-            'Total Quantity',
-            'Total Value',
-            'Taxable Value',
-            'Integrated Tax Amount',
-            'Central Tax Amount',
-            'State/UT Tax Amount',
-            'Cess Amount'
-        ]
-        return columns

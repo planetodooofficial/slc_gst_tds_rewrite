@@ -1,5 +1,4 @@
-odoo.define('modules_club.gst_dashboard', function (require) {
-'use strict';
+odoo.define('modules_club.gst_dashboard', function (require) {'use strict';
 
 var AbstractField = require('web.AbstractField');
 var field_registry = require('web.field_registry');

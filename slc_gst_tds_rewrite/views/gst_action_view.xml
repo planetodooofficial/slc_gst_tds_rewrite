@@ -11,7 +11,7 @@
                 ('type', '=', 'out_invoice')
             ]</field>
             <field name="context">{
-                "search_default_filter_by_gst_status": 1,
+                "search_default_filter_by_invoice_type_status": 1,
                 'default_type': 'out_invoice'
             }</field>
         </record>
@@ -20,8 +20,8 @@
             <field name="name">GST Attachments</field>
             <field name="res_model">ir.attachment</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="gst_wk_ir_attachment_tree_view"/>
-            <field name="domain">[('res_model', '=', 'gstr1.tool')]</field>
+            <field name="view_id" ref="gst_ir_attachment_tree"/>
+            <field name="domain">[('res_model', '=', 'gst.return.tool')]</field>
         </record>
 
         <record id="action_invoice_gst_tree1_view2" model="ir.actions.act_window.view">
@@ -40,20 +40,20 @@
 
         <record id="gstr1_list_action" model="ir.actions.act_window">
             <field name="name">GSTR1 Tool</field>
-            <field name="res_model">gstr1.tool</field>
+            <field name="res_model">gst.return.tool</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="gstr1_tool_tree"/>
             <field name="search_view_id" ref="view_gstr_filter"/>
-            <field name="domain">[('gst_type', '=', 'gstr1')]</field>
+            <field name="domain">[('gst_return_type', '=', 'gstr1')]</field>
             <field name="context">{'default_gst_type': 'gstr1'}</field>
         </record>
 
         <record id="gstr2_list_action" model="ir.actions.act_window">
             <field name="name">GSTR2 Tool</field>
-            <field name="res_model">gstr1.tool</field>
+            <field name="res_model">gst.return.tool</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="gstr1_tool_tree"/>
-            <field name="domain">[('gst_type', '=', 'gstr2')]</field>
+            <field name="domain">[('gst_return_type', '=', 'gstr2')]</field>
             <field name="search_view_id" ref="view_gstr_filter"/>
             <field name="context">{'default_gst_type': 'gstr2'}</field>
         </record>
@@ -73,7 +73,7 @@
         </record>
 
         <record id="supplier_invoice_list_action" model="ir.actions.act_window">
-            <field name="name">Supplier Invoice</field>
+            <field name="name">Vendor Invoice</field>
             <field name="res_model">account.move</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="gst_invoice_tree"/>
@@ -82,7 +82,7 @@
                 ('type', '=', 'in_invoice')
             ]</field>
             <field name="context">{
-                "search_default_filter_by_gst_status": 1,
+                "search_default_filter_by_invoice_type_status": 1,
                 'default_type': 'in_invoice',
                 'type': 'in_invoice',
                 'journal_type': 'purchase'

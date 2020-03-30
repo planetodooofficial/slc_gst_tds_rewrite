@@ -2,63 +2,64 @@
 from odoo import api, models
 
 
-class GstTaxData(models.TransientModel):
-    _name = "gst.tax.data"
-    _description = "GST tax data"
+class WizardTaxGST(models.TransientModel):
+    _name = "wizard.tax.gst"
 
-    def getTaxedAmount(self, rateObjs, price, currency, invoiceLineObj, invoiceObj):
-        taxedAmount = 0.0
-        total_excluded = 0.0
-        taxes = rateObjs.compute_all(price, currency, invoiceLineObj.quantity,
-                                     product=invoiceLineObj.product_id, partner=invoiceObj.partner_id)
-        if taxes:
-            total_included = taxes.get('total_included') or 0.0
-            total_excluded = taxes.get('total_excluded') or 0.0
-            taxedAmount = total_included - total_excluded
-        if currency.name != 'INR':
-            taxedAmount = taxedAmount * currency.rate
-            total_excluded = total_excluded * currency.rate
-        return [taxedAmount, total_excluded]
-
-    def getGstTaxData(self, invoiceObj, invoiceLineObj, rateObjs, taxedAmount, invoiceType):
-        taxedAmount = round(taxedAmount, 2)
-        gstDict = {
-            "rt": 0.0,
-            "iamt": 0.0,
-            "camt": 0.0,
-            "samt": 0.0,
-            "csamt": 0.0
+    def gst_tax_data(self, gst_invoice_obj, obj_invoice_line, obj_rate, amount_taxed, invoice_type):
+        amount_taxed = round(amount_taxed, 2)
+        gst_data = {
+            "gst_amt": 0.0,
+            "gst_round_amt": 0.0,
+            "cgst_amt": 0.0,
+            "sgst_amt": 0.0,
+            "cess_amt": 0.0
         }
-        if invoiceType == "export":
-            gstDict = {"txval": 0.0, "rt": 0, "iamt": 0.0}
-        if invoiceType in ['imps', 'impg']:
-            gstDict = {
-                "elg": "no",
-                "txval": 0.0,
-                "rt": 0,
-                "iamt": 0.0,
-                'tx_i': 0.0,
-                'tx_cs': 0.0
+        if invoice_type == "export":
+            gst_data = {"tax_value": 0.0, "gst_amt": 0, "gst_round_amt": 0.0}
+        if invoice_type in ['imps', 'impg']:
+            gst_data = {
+                "itc_eligibility": "no",
+                "tax_value": 0.0,
+                "gst_amt": 0,
+                "gst_round_amt": 0.0,
+                'tax_invoice': 0.0,
+                'tax_cess': 0.0
             }
-        if invoiceType == "b2cs":
-            gstDict['sply_ty'] = 'INTRA'
-            gstDict['typ'] = 'OE'
-        if rateObjs:
-            if invoiceObj.partner_id.country_id.code == 'IN':
-                for rateObj in rateObjs:
-                    if rateObj.amount_type == "group":
-                        for childObj in rateObj.children_tax_ids:
-                            gstDict['rt'] = childObj.amount * 2
-                            gstDict['samt'] = round(taxedAmount / 2, 2)
-                            gstDict['camt'] = round(taxedAmount / 2, 2)
+        if invoice_type == "b2cs":
+            gst_data['supply_state'] = 'INTRA'
+            gst_data['typ'] = 'OE'
+        if obj_rate:
+            if gst_invoice_obj.partner_id.country_id.code == 'IN':
+                for rate_obj in obj_rate:
+                    if rate_obj.amount_type == "group":
+                        for childObj in rate_obj.children_tax_ids:
+                            gst_data['gst_amt'] = childObj.amount * 2
+                            gst_data['sgst_amt'] = round(amount_taxed / 2, 2)
+                            gst_data['cgst_amt'] = round(amount_taxed / 2, 2)
                             break
                     else:
-                        gstDict['rt'] = rateObj.amount
-                        gstDict['iamt'] = round(taxedAmount, 2)
+                        gst_data['gst_amt'] = rate_obj.amount
+                        gst_data['gst_round_amt'] = round(amount_taxed, 2)
                     break
-            elif invoiceType in ['imps', 'impg']:
-                for rateObj in rateObjs:
-                    gstDict['rt'] = rateObj.amount
-                    gstDict['iamt'] = round(taxedAmount, 2)
+            elif invoice_type in ['imps', 'impg']:
+                for rate_obj in obj_rate:
+                    gst_data['gst_amt'] = rate_obj.amount
+                    gst_data['gst_round_amt'] = round(amount_taxed, 2)
                     break
-        return gstDict
+        return gst_data
+
+    def compute_taxed_amount(self, obj_rate, price, currency, obj_invoice_line, gst_invoice_objs):
+        amount_taxed = 0.0
+        total_excluded = 0.0
+        compute_tax = obj_rate.compute_all(price, currency, obj_invoice_line.quantity,
+                                     product=obj_invoice_line.product_id, partner=gst_invoice_objs.partner_id)
+        if compute_tax:
+            total_included = compute_tax.get('total_included') or 0.0
+            total_excluded = compute_tax.get('total_excluded') or 0.0
+            amount_taxed = total_included - total_excluded
+        if currency.name != 'INR':
+            amount_taxed = amount_taxed * currency.rate
+            total_excluded = total_excluded * currency.rate
+        return [amount_taxed, total_excluded]
+
+

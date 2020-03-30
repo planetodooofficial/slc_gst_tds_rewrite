@@ -5,126 +5,126 @@ class GstHsnData(models.TransientModel):
     _name = "gst.hsn.data"
     _description = "GST HSN data"
 
-    def getHSNData(self, invoiceObj, count, hsnDict={}, hsnDataDict={}):
-        mainData = []
-        jsonData = []
-        currency = invoiceObj.currency_id or None
+    def update_HSN_data(self, gst_invoice_obj, count, get_hsn_data={}, hsn_get={}):
+        import_data = []
+        json_data = []
+        currency = gst_invoice_obj.currency_id or None
         context = dict(self._context or {})
-        for invoiceLineObj in invoiceObj.invoice_line_ids:
-            price = invoiceLineObj.price_subtotal / invoiceLineObj.quantity
-            taxedAmount, cgst, sgst, igst = 0.0, 0.0, 0.0, 0.0
-            rateObjs = invoiceLineObj.tax_ids
-            if rateObjs:
-                taxData = self.env['gst.tax.data'].getTaxedAmount(
-                    rateObjs, price, currency, invoiceLineObj, invoiceObj)
-                rateAmount = taxData[1]
-                taxedAmount = taxData[0]
+        for obj_invoice_line in gst_invoice_obj.invoice_line_ids:
+            price = obj_invoice_line.price_subtotal / obj_invoice_line.quantity
+            amount_taxed, cgst, sgst, igst = 0.0, 0.0, 0.0, 0.0
+            obj_rate = obj_invoice_line.tax_ids
+            if obj_rate:
+                computed_tax_amount = self.env['wizard.tax.gst'].compute_taxed_amount(
+                    obj_rate, price, currency, obj_invoice_line, gst_invoice_obj)
+                amt_rate = computed_tax_amount[1]
+                amount_taxed = computed_tax_amount[0]
                 if currency.name != 'INR':
-                    taxedAmount = taxedAmount * currency.rate
-                taxedAmount = round(taxedAmount, 2)
-                # if invoiceObj.partner_id.country_id.code == 'IN':
-                for rateObj in rateObjs:
-                    if rateObj.amount_type == "group":
-                        cgst, sgst = round(taxedAmount / 2, 2), round(taxedAmount / 2, 2)
+                    amount_taxed = amount_taxed * currency.rate
+                amount_taxed = round(amount_taxed, 2)
+                # if gst_invoice_obj.partner_id.country_id.code == 'IN':
+                for obj_rate in obj_rate:
+                    if obj_rate.amount_type == "group":
+                        cgst, sgst = round(amount_taxed / 2, 2), round(amount_taxed / 2, 2)
                     else:
-                        igst = round(taxedAmount, 2)
-            invUntaxedAmount = round(invoiceLineObj.price_subtotal, 2)
+                        igst = round(amount_taxed, 2)
+            invoice_line_untaxed_amt = round(obj_invoice_line.price_subtotal, 2)
             if currency.name != 'INR':
-                invUntaxedAmount = round(invoiceLineObj.price_subtotal * currency.rate, 2)
-            productObj = invoiceLineObj.product_id
-            hsnVal = 'False'
-            if productObj.l10n_in_hsn_code:
-                hsnVal = productObj.l10n_in_hsn_code.replace('.', '')
-            hsnName = productObj.name or 'name'
-            uqc = 'OTH'
-            if productObj.uom_id:
-                uom = productObj.uom_id.id
-                uqcObj = self.env['uom.mapping'].search([('uom', '=', uom)])
-                if uqcObj:
-                    uqc = uqcObj[0].name.code
-            invQty = invoiceLineObj.quantity
-            invAmountTotal = invUntaxedAmount + taxedAmount
-            if hsnDataDict.get(hsnVal):
-                if hsnDataDict.get(hsnVal).get(hsnName):
-                    if hsnDataDict.get(hsnVal).get(hsnName).get('qty'):
-                        invQty += hsnDataDict.get(hsnVal).get(hsnName).get('qty')
-                        hsnDataDict.get(hsnVal).get(hsnName)['qty'] = invQty
+                invoice_line_untaxed_amt = round(obj_invoice_line.price_subtotal * currency.rate, 2)
+            obj_product = obj_invoice_line.product_id
+            hsn_status = 'False'
+            if obj_product.l10n_in_hsn_code:
+                hsn_status = obj_product.l10n_in_hsn_code.replace('.', '')
+            hsn_name = obj_product.name or 'name'
+            unit_code = 'OTH'
+            if obj_product.uom_id:
+                uom = obj_product.uom_id.id
+                unit_code_obj = self.env['uom.mapping'].search([('uom', '=', uom)])
+                if unit_code_obj:
+                    unit_code = unit_code_obj[0].name.code
+            invoice_qty = obj_invoice_line.quantity
+            invoice_amount_total = invoice_line_untaxed_amt + amount_taxed
+            if get_hsn_data.get(hsn_status):
+                if get_hsn_data.get(hsn_status).get(hsn_name):
+                    if get_hsn_data.get(hsn_status).get(hsn_name).get('qty'):
+                        invoice_qty += get_hsn_data.get(hsn_status).get(hsn_name).get('qty')
+                        get_hsn_data.get(hsn_status).get(hsn_name)['qty'] = invoice_qty
                     else:
-                        hsnDataDict.get(hsnVal).get(hsnName)['qty'] = invQty
-                    if hsnDataDict.get(hsnVal).get(hsnName).get('val'):
-                        invAmountTotal = round(
-                            hsnDataDict.get(hsnVal).get(hsnName).get('val') + invAmountTotal, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['val'] = invAmountTotal
+                        get_hsn_data.get(hsn_status).get(hsn_name)['qty'] = invoice_qty
+                    if get_hsn_data.get(hsn_status).get(hsn_name).get('val'):
+                        invoice_amount_total = round(
+                            get_hsn_data.get(hsn_status).get(hsn_name).get('val') + invoice_amount_total, 2)
+                        get_hsn_data.get(hsn_status).get(hsn_name)['val'] = invoice_amount_total
                     else:
-                        invAmountTotal = round(invAmountTotal, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['val'] = invAmountTotal
-                    if hsnDataDict.get(hsnVal).get(hsnName).get('txval'):
-                        invUntaxedAmount = round(
-                            hsnDataDict.get(hsnVal).get(hsnName).get('txval') + invUntaxedAmount, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['txval'] = invUntaxedAmount
+                        invoice_amount_total = round(invoice_amount_total, 2)
+                        get_hsn_data.get(hsn_status).get(hsn_name)['val'] = invoice_amount_total
+                    if get_hsn_data.get(hsn_status).get(hsn_name).get('tax_value'):
+                        invoice_line_untaxed_amt = round(
+                            get_hsn_data.get(hsn_status).get(hsn_name).get('tax_value') + invoice_line_untaxed_amt, 2)
+                        get_hsn_data.get(hsn_status).get(hsn_name)['tax_value'] = invoice_line_untaxed_amt
                     else:
-                        invUntaxedAmount = round(invUntaxedAmount, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['txval'] = invUntaxedAmount
-                    if hsnDataDict.get(hsnVal).get(hsnName).get('iamt'):
-                        igst = round(hsnDataDict.get(hsnVal).get(hsnName).get('iamt') + igst, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['iamt'] = igst
+                        invoice_line_untaxed_amt = round(invoice_line_untaxed_amt, 2)
+                        get_hsn_data.get(hsn_status).get(hsn_name)['tax_value'] = invoice_line_untaxed_amt
+                    if get_hsn_data.get(hsn_status).get(hsn_name).get('gst_round_amt'):
+                        igst = round(get_hsn_data.get(hsn_status).get(hsn_name).get('gst_round_amt') + igst, 2)
+                        get_hsn_data.get(hsn_status).get(hsn_name)['gst_round_amt'] = igst
                     else:
                         igst = round(igst, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['iamt'] = igst
-                    if hsnDataDict.get(hsnVal).get(hsnName).get('camt'):
-                        cgst = round(hsnDataDict.get(hsnVal).get(hsnName).get('camt') + cgst, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['camt'] = cgst
+                        get_hsn_data.get(hsn_status).get(hsn_name)['gst_round_amt'] = igst
+                    if get_hsn_data.get(hsn_status).get(hsn_name).get('cgst_amt'):
+                        cgst = round(get_hsn_data.get(hsn_status).get(hsn_name).get('cgst_amt') + cgst, 2)
+                        get_hsn_data.get(hsn_status).get(hsn_name)['cgst_amt'] = cgst
                     else:
                         cgst = round(cgst, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['camt'] = cgst
-                    if hsnDataDict.get(hsnVal).get(hsnName).get('samt'):
-                        sgst = round(hsnDataDict.get(hsnVal).get(hsnName).get('samt') + sgst, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['samt'] = sgst
+                        get_hsn_data.get(hsn_status).get(hsn_name)['cgst_amt'] = cgst
+                    if get_hsn_data.get(hsn_status).get(hsn_name).get('sgst_amt'):
+                        sgst = round(hsn_get.get(hsn_status).get(hsn_name).get('sgst_amt') + sgst, 2)
+                        hsn_get.get(hsn_status).get(hsn_name)['sgst_amt'] = sgst
                     else:
                         sgst = round(sgst, 2)
-                        hsnDataDict.get(hsnVal).get(hsnName)['samt'] = sgst
+                        hsn_get.get(hsn_status).get(hsn_name)['sgst_amt'] = sgst
                 else:
                     count = count + 1
-                    hsnDataDict.get(hsnVal)[hsnName] = {
+                    hsn_get.get(hsn_status)[hsn_name] = {
                         'num': count,
-                        'hsn_sc': hsnVal,
-                        'desc': hsnName,
-                        'uqc': uqc,
-                        'qty': invQty,
-                        'val': invAmountTotal,
-                        'txval': invUntaxedAmount,
-                        'iamt': igst,
-                        'camt': cgst,
-                        'samt': sgst,
-                        'csamt': 0.0
+                        'hsn_sc': hsn_status,
+                        'desc': hsn_name,
+                        'unit_code': unit_code,
+                        'qty': invoice_qty,
+                        'val': invoice_amount_total,
+                        'tax_value': invoice_line_untaxed_amt,
+                        'gst_round_amt': igst,
+                        'cgst_amt': cgst,
+                        'sgst_amt': sgst,
+                        'cess_amt': 0.0
                     }
             else:
                 count = count + 1
-                hsnDataDict[hsnVal] = {
-                    hsnName: {
+                hsn_get[hsn_status] = {
+                    hsn_name: {
                         'num': count,
-                        'hsn_sc': hsnVal,
-                        'desc': hsnName,
-                        'uqc': uqc,
-                        'qty': invQty,
-                        'val': invAmountTotal,
-                        'txval': invUntaxedAmount,
-                        'iamt': igst,
-                        'camt': cgst,
-                        'samt': sgst,
-                        'csamt': 0.0
+                        'hsn_sc': hsn_status,
+                        'desc': hsn_name,
+                        'unit_code': unit_code,
+                        'qty': invoice_qty,
+                        'val': invoice_amount_total,
+                        'tax_value': invoice_line_untaxed_amt,
+                        'gst_round_amt': igst,
+                        'cgst_amt': cgst,
+                        'sgst_amt': sgst,
+                        'cess_amt': 0.0
                     }
                 }
-            hsnData_t = False
-            if productObj.l10n_in_hsn_code:
-                hsnData_t = productObj.l10n_in_hsn_code.replace('.', '')
+            hsn_product_data = False
+            if obj_product.l10n_in_hsn_code:
+                hsn_product_data = obj_product.l10n_in_hsn_code.replace('.', '')
             hsnData = [
-                hsnData_t, productObj.name, uqc, invQty,
-                invAmountTotal, invUntaxedAmount, igst, cgst, sgst, 0.0
+                hsn_product_data, obj_product.name, unit_code, invoice_qty,
+                invoice_amount_total, invoice_line_untaxed_amt, igst, cgst, sgst, 0.0
             ]
-            if hsnDict.get(hsnVal):
-                hsnDict.get(hsnVal)[hsnName] = hsnData
+            if get_hsn_data.get(hsn_status):
+                get_hsn_data.get(hsn_status)[hsn_name] = hsnData
             else:
-                hsnDict[hsnVal] = {hsnName: hsnData}
-            mainData.append(hsnData)
-        return [mainData, jsonData, hsnDict, hsnDataDict]
+                get_hsn_data[hsn_status] = {hsn_name: hsnData}
+            import_data.append(hsnData)
+        return [import_data, json_data, get_hsn_data, hsn_get]
